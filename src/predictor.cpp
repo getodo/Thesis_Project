@@ -11,7 +11,6 @@ int direction = 0;
 int debounce = 0;
 int last_direction = 0;
 String predict;
-
 // TFLite globals, used for compatibility with Arduino-style sketches
 namespace
 {
