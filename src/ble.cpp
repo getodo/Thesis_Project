@@ -1,4 +1,5 @@
 #include <ArduinoBLE.h>
+#include "LSM9DS1.h"
 
 #define BLE_BUFFER_SIZES 64
 #define BLE_DEVICE_NAME "Arduino Nano 33 BLE Sense"
@@ -19,15 +20,18 @@ void init_ble()
         Serial.println("BLE failed to Initiate");
     }
 
-    BLE.setDeviceName(BLE_DEVICE_NAME);
-    BLE.setLocalName(BLE_LOCAL_NAME);
-    BLE.setAdvertisedService(BLEAccelerometer);
-    BLEAccelerometer.addCharacteristic(accelerometerXYZBLE);
-    BLE.addService(BLEAccelerometer);
-    BLE.advertise();
+    else
+    {
+        BLE.setDeviceName(BLE_DEVICE_NAME);
+        BLE.setLocalName(BLE_LOCAL_NAME);
+        BLE.setAdvertisedService(BLEAccelerometer);
+        BLEAccelerometer.addCharacteristic(accelerometerXYZBLE);
+        BLE.addService(BLEAccelerometer);
+        BLE.advertise();
+    }
 }
 
-void tx_ble_message(String message)
+void tx_ble_message(String txBLE)
 {
-    accelerometerXYZBLE.writeValue(message);
+    accelerometerXYZBLE.writeValue(txBLE);
 }

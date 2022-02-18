@@ -21,7 +21,14 @@ void loop()
 {
     // Variable to checsk if cetral device is connected
     BLEDevice central = BLE.central();
-    p = read_LSM9DS1();
-    prediction = predictor(p[0], p[1], p[2]);
-    Serial.println(prediction);
+    if (central)
+    {
+        Serial.print("Connected to central: ");
+        Serial.println(central.address());
+        while (central.connected())
+        {
+            prediction = predictor(p[0], p[1], p[2]);
+            tx_ble_message(prediction);
+        }
+    }
 }
