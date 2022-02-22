@@ -8,6 +8,7 @@
 float *p;
 String tx;
 String prediction;
+String currentPrediction = " ";
 
 void setup()
 {
@@ -27,8 +28,19 @@ void loop()
         Serial.println(central.address());
         while (central.connected())
         {
+            p = read_LSM9DS1();
             prediction = predictor(p[0], p[1], p[2]);
-            tx_ble_message(prediction);
+            if (currentPrediction == " ")
+            {
+                currentPrediction = prediction; //Set for first prediction
+                tx_ble_message(prediction);
+            }
+            if (currentPrediction != prediction)
+            {
+                tx_ble_message(prediction);
+            }
+
+            currentPrediction = prediction;
         }
     }
 }

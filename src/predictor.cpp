@@ -98,6 +98,10 @@ String predictor(float x, float y, float z)
             direction = i;
         }
     }
+    Serial.println(model_output->data.f[0]);
+    Serial.println(model_output->data.f[1]);
+    Serial.println(model_output->data.f[2]);
+    Serial.println(model_output->data.f[3]);
 
     if (last_direction == direction)
     {
@@ -124,9 +128,7 @@ String predictor(float x, float y, float z)
         }
         debounce = 0;
     }
-
     last_direction = direction;
 
-    delay(100);
     return predict;
 }
