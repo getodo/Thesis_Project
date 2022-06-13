@@ -13,7 +13,7 @@ BLEStringCharacteristic accelerometerXYZBLE("30f3ea56-10b5-11ec-82a8-0242ac13000
 // HIP CHAR
 //BLEService BLEAccelerometer("30F3EA56-10B5-11EC-82A8-0242AC130002");
 //BLEStringCharacteristic accelerometerXYZBLE("30F3EA56-10B5-11EC-82A8-0242AC130002",
-                                         //   BLERead | BLENotify, BLE_BUFFER_SIZES);
+                                           // BLERead | BLENotify, BLE_BUFFER_SIZES);
 
 String ble_tx;
 
@@ -24,6 +24,8 @@ void init_ble()
     if (!BLE.begin())
     {
         Serial.println("BLE failed to Initiate");
+        while(1)
+            Serial.println("BLE FAIL");
     }
 
     else

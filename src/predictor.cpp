@@ -8,7 +8,10 @@
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/version.h"
 #include "arm_lite_model.h"
+#include "hip_lite_model.h"
 #include "ble.h"
+
+#define DEBUG 1
 
 int direction = 0;
 int debounce = 0;
@@ -28,7 +31,7 @@ namespace
     // Create an area of memory to use for input, output, and other TensorFlow
     // arrays. You'll need to adjust this by combiling, running, and looking
     // for errors.
-    constexpr int kTensorArenaSize = 80 * 1024;
+    constexpr int kTensorArenaSize = 20 * 1024;
     byte tensor_arena[kTensorArenaSize] __attribute__((aligned(16)));
 
 }
@@ -40,28 +43,42 @@ void init_predictor()
     tflite::AllOpsResolver resolver;
     // Map the model into a usable data structure
     model = tflite::GetModel(arm_lite_model);
+    
 
     if (model->version() != TFLITE_SCHEMA_VERSION)
     {
         error_reporter->Report("Model version does not match Schema");
         while (1)
         {
+
         }
     }
+
+    static tflite::MicroMutableOpResolver<8> micro_op_resolver;  // NOLINT
+    micro_op_resolver.AddConv2D();
+    micro_op_resolver.AddMean();
+    micro_op_resolver.AddFullyConnected();
+    micro_op_resolver.AddSoftmax();
+    micro_op_resolver.AddStridedSlice();
+    micro_op_resolver.AddTanh();
+    micro_op_resolver.AddDepthwiseConv2D();
+    micro_op_resolver.AddMaxPool2D();
 
     // Build an interpreter to run the model
     static tflite::MicroInterpreter static_interpreter(
         model, resolver, tensor_arena, kTensorArenaSize,
         error_reporter);
     interpreter = &static_interpreter;
-
+    
     // Allocate memory from the tensor_arena for the model's tensors
     TfLiteStatus allocate_status = interpreter->AllocateTensors();
+
     if (allocate_status != kTfLiteOk)
     {
         error_reporter->Report("AllocateTensors() failed");
         while (1)
         {
+            Serial.println("ALLOCATE FAIL");
         }
     }
 
@@ -81,24 +98,12 @@ void init_predictor()
 #endif
 }
 
-String predictor(float x, float y, float z, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, float x5, float y5, float z5)
+String predictor(float x, float y, float z)
 {
 
     model_input->data.f[0] = x;
     model_input->data.f[1] = y;
     model_input->data.f[2] = z;
-    model_input->data.f[3] = x2;
-    model_input->data.f[4] = y2;
-    model_input->data.f[5] = z2;
-    model_input->data.f[6] = x3;
-    model_input->data.f[7] = y3;
-    model_input->data.f[8] = z3;
-    model_input->data.f[9] = x4;
-    model_input->data.f[10] = y4;
-    model_input->data.f[11] = z4;
-    model_input->data.f[12] = x5;
-    model_input->data.f[13] = y5;
-    model_input->data.f[14] = z5;
 
     TfLiteStatus invoke_status = interpreter->Invoke();
     if (invoke_status != kTfLiteOk)
