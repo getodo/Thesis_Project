@@ -8,5 +8,7 @@ Tiny activity classification using TensorFlow Lite <br />
 5. Build and flash. <br />
 6. Use GUI to receive BLE messages from device (may require some restarts to get working few bugs). <br />
 <br />
+Notes: <br />
+If unable to find com port for flashing, change platformio.ini com to assigned com port in device manager. <br />
 Device variables (characteristic) may need to be changed in BLE.c. <br />
 Array variable in predictor.c may need to be changed if array is different. <br />
